@@ -73,6 +73,7 @@ class DefaultController extends AbstractController
      * @Route("/json", name="default_index_json")
      */
     public function indexJson(): JsonResponse {
-        return new JsonResponse(self::PEOPLE);
+        //return new JsonResponse(self::PEOPLE);
+        return $this->json(self::PEOPLE);
     }
 }
