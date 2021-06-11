@@ -70,7 +70,13 @@ class DefaultController extends AbstractController
 
     // Devuelve contenido JSON
     /**
-     * @Route("/json", name="default_index_json")
+          * @Route(
+     *      "/default.{_format}",
+     *      name="default_index_json",
+     *      requirements = {
+     *          "_format": "json"
+     *      }
+     * )
      */
     public function indexJson(): JsonResponse {
         //return new JsonResponse(self::PEOPLE);
