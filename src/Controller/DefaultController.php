@@ -50,7 +50,7 @@ class DefaultController extends AbstractController
 
         // Se recomienda ponerlo siempre en Templates
         return $this->render('default/index.html.twig', [
-           'nombre' => $name
+            'people' => self::PEOPLE
         ]);
     }
 
