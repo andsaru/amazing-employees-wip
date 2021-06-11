@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -12,6 +13,12 @@ use Symfony\Component\Routing\Annotation\Route;
 // que pone a disposición nuestra multitud de caracteristicas.
 class DefaultController extends AbstractController
 {
+    const PEOPLE = [
+        ['name' => 'Carlos', 'email' => 'carlos@correo.com', 'age' => 30, 'city' => 'Benalmádena'],
+        ['name' => 'Carmen', 'email' => 'carmen@correo.com', 'age' => 25, 'city' => 'Fuengirola'],
+        ['name' => 'Carmelo', 'email' => 'carmelo@correo.com', 'age' => 35, 'city' => 'Torremolinos'],
+        ['name' => 'Carolina', 'email' => 'carolina@correo.com', 'age' => 38, 'city' => 'Málaga'], 
+    ];
     /**
      * @Route("/default", name="default_index")
      * 
@@ -59,5 +66,13 @@ class DefaultController extends AbstractController
      */
     public function adios(): Response {
         return new Response('<html><body>adios</body></html>');
+    }
+
+    // Devuelve contenido JSON
+    /**
+     * @Route("/json", name="default_index_json")
+     */
+    public function indexJson(): JsonResponse {
+        return new JsonResponse(self::PEOPLE);
     }
 }
