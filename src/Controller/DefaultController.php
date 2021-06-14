@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -45,8 +46,16 @@ class DefaultController extends AbstractController
         // Mostrar las rutas disonibles en mi navegador:
         // - symfony console debug:router
         // - symfony console debug:router default_index
-        // - symfony console router --help
-        // - symfony console router:match /     
+        // - symfony console router --help  
+        // - symfony console router:match /
+
+        // Acceso y propiedades del objeto Request.
+        // https://symfony.com/doc/current/controller.html#the-request-and-response-object
+        // echo '<pre>query: '; var_dump($request->query); echo '</pre>'; // Equivalente a $_GET, pero supervitaminado.
+        // echo '<pre>post: '; var_dump($request->request); echo '</pre>'; // Equivalente a $_POST, pero supervitaminado.
+        // echo '<pre>server: '; var_dump($request->server); echo '</pre>'; // Equivalente a $_SERVER, pero supervitaminado.
+        // echo '<pre>files: '; var_dump($request->files); echo '</pre>'; // Equivalente a $_FILES, pero supervitaminado.
+        // echo '<pre>idioma prefererido: '; var_dump($request->getPreferredLanguage()); echo '</pre>';   
 
         // Se recomienda ponerlo siempre en Templates
         return $this->render('default/index.html.twig', [
@@ -86,5 +95,21 @@ class DefaultController extends AbstractController
     public function indexJson(): JsonResponse {
         //return new JsonResponse(self::PEOPLE);
         return $this->json(self::PEOPLE);
+    }
+
+        /**
+     * @Route(
+     *      "/default/{id}",
+     *      name="default_show",
+     *      requirements = {
+     *          "id": "[0-3]"
+     *      }
+     * )
+     */
+    public function show(int $id): Response {
+        var_dump($id); die();
+        return $this->render('default/index.html.twig', [
+            'people' => self::PEOPLE
+        ]);
     }
 }

@@ -2,12 +2,14 @@
 {% extends 'base.html.twig' %}
 
 {% block header %}
+    {# Si quiero mantener el contenido anterior y abajo lo que quiera #}
+    {# {{ parent() }} #}
     {{ include('partial/header.html.twig') }}
 {% endblock %}
 
 {% block body %}
     <table>
-        <thead>
+        <thead>s
             <tr>
                 <th>Nombre</th>
                 <th>Email</th>
@@ -18,7 +20,7 @@
             {% for person in people %}
             <tr>
                 <td>{{ person.name }}</td>
-                <td>{{ person.email }}</td>
+                <td><a href="{{ path('default_show', { id: loop.index0 }) }}">{{ person.email }}</a></td>
                 <td>{{ person.city }}</td>
             </tr>
             {% endfor %}

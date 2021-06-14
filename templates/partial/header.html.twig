@@ -1,9 +1,9 @@
 <header>
     <nav>
         <ul>
-            <li><a href="#">Página de inicio</a>
-            <li><a href="#">Empleados HTML</a>
-            <li><a href="#">Empleados JSON</a>
+            <li><a href="/">Página de inicio</a>
+            <li><a href="{{ path('default_index') }}">Empleados HTML</a>
+            <li><a href="{{ path('default_index_json', { _format: 'json' }) }}">Empleados JSON</a>
         </ul>
     </nav>
 </header> 
