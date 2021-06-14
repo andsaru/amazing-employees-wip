@@ -1,7 +1,7 @@
 <header>
     <nav>
         <ul>
-            <li><a href="/">Página de inicio</a>
+            <li><a href="{{ path('default_redirect_to_home') }}">Página de inicio</a>
             {# path (urlr tambien se puede usar genera la ruta absoluta) nos va a generar la ruta desde
             DefaultController, @Route (/default"...) #}
             <li><a href="{{ path('default_index') }}">Empleados HTML</a>

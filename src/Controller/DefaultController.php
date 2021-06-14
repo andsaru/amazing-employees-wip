@@ -7,6 +7,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -50,6 +51,8 @@ class DefaultController extends AbstractController
         // - symfony console router:match /
 
         // Acceso y propiedades del objeto Request.
+        // public function index(Request $solicitud): Response
+        // {
         // https://symfony.com/doc/current/controller.html#the-request-and-response-object
         // echo '<pre>query: '; var_dump($request->query); echo '</pre>'; // Equivalente a $_GET, pero supervitaminado.
         // echo '<pre>post: '; var_dump($request->request); echo '</pre>'; // Equivalente a $_POST, pero supervitaminado.
@@ -115,5 +118,19 @@ class DefaultController extends AbstractController
             'id' => $id,
             'person' => self::PEOPLE[$id]
         ]);
+    }
+
+    /**
+     * @Route("/redirect-to-home", name="default_redirect_to_home")
+     */
+    public function redirectToHome(): RedirectResponse {
+        // Redirigir a la URL /
+        // return $this->redirect('/');
+
+        // Redirigir a una ruta utilizando su nombre.
+        // return $this->redirectToRoute('default_show', ['id' => 1]);
+
+        // Devolver directamente un objeto RedirectResponse.
+        return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
     }
 }
