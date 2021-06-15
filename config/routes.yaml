@@ -1,3 +1,11 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+# Redirige directamente a la página inicial, cada vez que carguemos, en vez de la página 
+# de symfony carga la default, la inicial 
+redirect_from_homepage_to_default_page:
+    path: /
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: 'default_index'
