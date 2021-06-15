@@ -19,11 +19,11 @@ class DefaultController extends AbstractController
         ['name' => 'Carlos', 'email' => 'carlos@correo.com', 'age' => 30, 'city' => 'Benalmádena'],
         ['name' => 'Carmen', 'email' => 'carmen@correo.com', 'age' => 25, 'city' => 'Fuengirola'],
         ['name' => 'Carmelo', 'email' => 'carmelo@correo.com', 'age' => 35, 'city' => 'Torremolinos'],
-        ['name' => 'Carolina', 'email' => 'carolina@correo.com', 'age' => 38, 'city' => 'Málaga'], 
+        ['name' => 'Carolina', 'email' => 'carolina@correo.com', 'age' => 38, 'city' => 'Málaga'],
     ];
     /**
      * @Route("/default", name="default_index")
-     * 
+     *
      * La clase ruta debe estar precedida en los comentario por una arroba.
      * El primer parámetro de Route es la URL a la que queremos asociar la acción.
      * El segundo parámetro de Route es el nombre que queremos dar a la ruta.
@@ -47,7 +47,7 @@ class DefaultController extends AbstractController
         // Mostrar las rutas disonibles en mi navegador:
         // - symfony console debug:router
         // - symfony console debug:router default_index
-        // - symfony console router --help  
+        // - symfony console router --help
         // - symfony console router:match /
 
         // Acceso y propiedades del objeto Request.
@@ -58,7 +58,7 @@ class DefaultController extends AbstractController
         // echo '<pre>post: '; var_dump($request->request); echo '</pre>'; // Equivalente a $_POST, pero supervitaminado.
         // echo '<pre>server: '; var_dump($request->server); echo '</pre>'; // Equivalente a $_SERVER, pero supervitaminado.
         // echo '<pre>files: '; var_dump($request->files); echo '</pre>'; // Equivalente a $_FILES, pero supervitaminado.
-        // echo '<pre>idioma prefererido: '; var_dump($request->getPreferredLanguage()); echo '</pre>';   
+        // echo '<pre>idioma prefererido: '; var_dump($request->getPreferredLanguage()); echo '</pre>';
 
         // Se recomienda ponerlo siempre en Templates
         return $this->render('default/index.html.twig', [
@@ -69,14 +69,16 @@ class DefaultController extends AbstractController
     /**
      * @Route("/hola", name="default_hola")
      */
-    public function hola(): Response {
+    public function hola(): Response
+    {
         return new Response('<html><body>hola</body></html>');
     }
 
-     /**
-     * @Route("/adios", name="default_adios")
-     */
-    public function adios(): Response {
+    /**
+    * @Route("/adios", name="default_adios")
+    */
+    public function adios(): Response
+    {
         return new Response('<html><body>adios</body></html>');
     }
 
@@ -89,18 +91,41 @@ class DefaultController extends AbstractController
      *          "_format": "json"
      *      }
      * )
-     * * 
+     * *
      * El comando:
      * symfony console router:match /default.json
      * buscará la acción coincidente con la ruta indicada
      * y mostrará la información asociada.
      */
-    public function indexJson(): JsonResponse {
-        //return new JsonResponse(self::PEOPLE);
-        return $this->json(self::PEOPLE);
+    // Aquí mostraba toda la info de los usuarios con Json
+    // public function indexJson(): JsonResponse
+    // {
+    //     //return new JsonResponse(self::PEOPLE);
+    //     return $this->json(self::PEOPLE);
+    // }
+
+    // EJERCICIO
+    // Crear el recurso para obtener una representación
+    // de "UN" empleado en formato JSON.
+
+    // Hemos inyectado un parametro de tipo request, indicandole el tipo de objeto que quiero agregar
+    // Request tiene una propiedad query, equivalente a la variable GET
+    // Query tiene varios metodos, uno de ellos es has, y le pregunta si tiene un parametro id
+    // Si la evaluación de la primera expresión es falso devuelve self::PEOPLE (El array completo con todos los registros)
+    // Si la evaluación es true devuelve, acceder primero al array, pero coger a la fila que le llega por id
+    // self::PEOPLE[$request->query->get('id')]
+    // Y devuelve el valor de la variabla $data
+    // En index.html.twig le pasamos lo siguiente
+    // <li><a href="{{ path('default_index_json', { _format: 'json',  id: loop.index0 }) }}">Ver en formato JSON</a></li>
+
+    public function indexJson(Request $request): JsonResponse {
+        // Hace una comparación ternaria 
+        $data = $request->query->has('id') ? self::PEOPLE[$request->query->get('id')] : self::PEOPLE;
+
+        return $this->json($data);
     }
 
-        /**
+    /**
      * @Route(
      *      "/default/{id}",
      *      name="default_show",
@@ -109,7 +134,8 @@ class DefaultController extends AbstractController
      *      }
      * )
      */
-    public function show(int $id): Response {
+    public function show(int $id): Response
+    {
         // var_dump($id); die();
         
         return $this->render('default/show.html.twig', [
@@ -121,7 +147,8 @@ class DefaultController extends AbstractController
     /**
      * @Route("/redirect-to-home", name="default_redirect_to_home")
      */
-    public function redirectToHome(): RedirectResponse {
+    public function redirectToHome(): RedirectResponse
+    {
         // Redirigir a la URL /
         // return $this->redirect('/');
 
@@ -132,7 +159,5 @@ class DefaultController extends AbstractController
         return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
     }
 
-    // EJERCICIO
-    // Crear la el recurso para obtener una representación
-    // de "UN" empleado en formato JSON.
+
 }

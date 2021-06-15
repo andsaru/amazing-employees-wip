@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Controller;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -9,10 +7,10 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/api", name="api_")
  */
-
 class ApiController extends AbstractController
 {
     /**
+     * @Route("/api", name="api")
      * @Route("/", name="get")
      */
     public function index(): Response
@@ -22,7 +20,7 @@ class ApiController extends AbstractController
             'path' => 'src/Controller/ApiController.php',
         ]);
     }
-    
+
     /**
      * @Route("/{id}", name="show")
      */
