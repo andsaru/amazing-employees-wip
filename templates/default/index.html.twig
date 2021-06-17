@@ -8,19 +8,24 @@
 {% endblock %}
 
 {% block body %}
+    <form method="GET">
+        <input type="text" name="term" />
+        <input type="submit" value="Buscar" />
+    </form>
+    <hr/>
     <table>
         <thead>
             <tr>
                 <th>Nombre <a href="{{ path('default_index', { orderBy: 'name', orderDir: 'DESC'}) }}">⬆</a>&nbsp;<a href="{{ path('default_index', { orderBy: 'name', orderDir: 'ASC'}) }}">⬇</a></th>
                 <th>Email <a href="{{ path('default_index', { orderBy: 'email', orderDir: 'DESC'}) }}">⬆</a>&nbsp;<a href="{{ path('default_index', { orderBy: 'email', orderDir: 'ASC'}) }}">⬇</a></th>
-                <th>Localidad <a href="{{ path('default_index', { orderBy: 'city', orderDir: 'DESC'}) }}">⬆</a>&nbsp;<a href="{{ path('default_index', { orderBy: 'city', orderDir: 'ASC'}) }}">⬇</a></th>           
+                <th>Localidad <a href="{{ path('default_index', { orderBy: 'city', orderDir: 'DESC'}) }}">⬆</a>&nbsp;<a href="{{ path('default_index', { orderBy: 'city', orderDir: 'ASC'}) }}">⬇</a></th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
             {% for person in people %}
             <tr>
                 <td>{{ person.name }}</td>
-                {# <td><a href="{{ path('default_show', { id: loop.index0 }) }}">{{ person.email }}</a></td> #}
                 <td>{{ person.email }}</td>
                 <td>{{ person.city }}</td>
                 <td>
@@ -34,11 +39,10 @@
         </tbody>
     </table>
 {% endblock %}
-
 {% block stylesheets %}
 <style>
     body {
         background-color: pink;
     }
 </style>
-{% endblock %} 
+{% endblock %}
