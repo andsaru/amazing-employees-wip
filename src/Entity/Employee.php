@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\EmployeeRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=EmployeeRepository::class)
+ * @UniqueEntity("email")
  */
 class Employee
 {
@@ -26,7 +28,7 @@ class Employee
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=128)
+     * @ORM\Column(type="string", length=128, unique=true)
      * 
      * @Assert\Email(
      *       message = "El correo {{ value }} no tiene un formato válido."
@@ -40,6 +42,7 @@ class Employee
      * @Assert\GreaterThanOrEqual(
      *      value = 18,
      *      message = "El empleado debe ser mayor de edad."
+     * )
      */
     private $age;
 
