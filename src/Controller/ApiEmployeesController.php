@@ -59,6 +59,16 @@ class ApiEmployeesController extends AbstractController
      * )
      */
     public function add(): Response {
+        $employee = new Employee();
+
+        $employee->setName('hola');
+        $employee->setEmail('hola@correo.com');
+        $employee->setAge(50);
+        $employee->setCity('Holaland');
+        $employee->setPhone('601601601');
+
+        dump($employee);
+
         return  $this->json([
             'method' => 'POST',
             'description' => 'Crea un recurso empleado.',
