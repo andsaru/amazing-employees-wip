@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Repository\EmployeeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +24,10 @@ class DefaultController extends AbstractController
      * El primer parámetro de Route es la URL a la que queremos asociar la acción.
      * El segundo parámetro de Route es el nombre que queremos dar a la ruta.
      */
-    public function index(): Response
+
+    // public function index(): Response // lo sustituye lo de abajo
+    public function index(EmployeeRepository $employeeRepository): Response
+
     {
         // Una acción siempre debe devolver una respesta.
         // Por defecto deberá ser un objeto de la clase,
@@ -55,12 +59,18 @@ class DefaultController extends AbstractController
         // echo '<pre>files: '; var_dump($request->files); echo '</pre>'; // Equivalente a $_FILES, pero supervitaminado.
         // echo '<pre>idioma prefererido: '; var_dump($request->getPreferredLanguage()); echo '</pre>';
 
+        // Metodo 1: accediendo al rpositorio a través de AbstractController.
+        // $people = $this->getDoctrine()->getRepository(Employee::class)->findAll(); // Employee::class = App\Entity\Employee
+
+        // Metodo 2: creando un parámetro indicando el tipo (type hint).
+        $people = $employeeRepository->findAll(); // Employee::class = App\Entity\Employee
+
         // Se recomienda ponerlo siempre en Templates
         return $this->render('default/index.html.twig', [
-            'people' => []
+            'people' => $people
         ]);
     }
-
+    
     /**
      * @Route("/hola", name="default_hola")
      */
@@ -113,11 +123,17 @@ class DefaultController extends AbstractController
     // En index.html.twig le pasamos lo siguiente
     // <li><a href="{{ path('default_index_json', { _format: 'json',  id: loop.index0 }) }}">Ver en formato JSON</a></li>
 
-    public function indexJson(Request $request): JsonResponse {
-        // Hace una comparación ternaria 
+    //public function indexJson(Request $request): JsonResponse {
+                // Hace una comparación ternaria 
         //$data = $request->query->has('id') ? self::PEOPLE[$request->query->get('id')] : self::PEOPLE;
-        $data = $request->query->has('id') ? [] : [];
-        return $this->json($data);
+        //$data = $request->query->has('id') ? [] : []; // sustituye abajo que ya es de la BD
+    public function indexJson(Request $request, EmployeeRepository $employeeRepository): JsonResponse { // Ya lo cogemos de la BD
+
+        $data = $request->query->has('id') ? 
+            $employeeRepository->find($request->query->get('id')) :
+            $employeeRepository->findAll();
+
+            return $this->json($data);
     }
 
     /**
@@ -125,18 +141,16 @@ class DefaultController extends AbstractController
      *      "/default/{id}",
      *      name="default_show",
      *      requirements = {
-     *          "id": "[0-3]"
+     *          "id": "\d+"
      *      }
      * )
      */
-    public function show(int $id): Response
-    {
-        // var_dump($id); die();
-        
+    public function show(int $id, EmployeeRepository $employeeRepository): Response {
+        $data = $employeeRepository->find($id);
+
         return $this->render('default/show.html.twig', [
             'id' => $id,
-            //'person' => self::PEOPLE[$id]
-            'person' => []
+            'person' => $data
         ]);
     }
 
