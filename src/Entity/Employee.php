@@ -37,7 +37,7 @@ class Employee
     /**
      * @ORM\Column(type="smallint")
      * 
-     * @Assert\GreatherThanOrEqual(
+     * @Assert\GreaterThanOrEqual(
      *      value = 18,
      *      message = "El empleado debe ser mayor de edad."
      */
