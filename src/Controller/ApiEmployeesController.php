@@ -105,13 +105,33 @@ class ApiEmployeesController extends AbstractController
      *      }
      * )
      */
-    public function update(int $id): Response
+    public function update(
+        int $id,
+        EntityManagerInterface $entityManager,
+        EmployeeRepository $employeeRepository,
+        Request $request
+    ): Response
     {
-        return $this->json([
-            'method' => 'PUT',
-            'description' => 'Actualiza un recurso empleado con id: '.$id.'.',
-        ]);
+        $employee = $employeeRepository->find($id);
+
+        if(!$employee) {
+            return $this->json([
+                'message' => sprintf('No he encontrado el empleado con id.: %s', $id)
+            ], Response::HTTP_NOT_FOUND);
+        }
+        $data = $request->request;
+
+        $employee->setName($data->get('name'));
+        $employee->setEmail($data->get('email'));
+        $employee->setAge($data->get('age'));
+        $employee->setCity($data->get('city'));
+        $employee->setPhone($data->get('phone'));
+
+        $entityManager->flush();
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
+
 
     /**
      * @Route(
