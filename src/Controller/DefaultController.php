@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Employee;
 use App\Repository\EmployeeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,7 +27,8 @@ class DefaultController extends AbstractController
      */
 
     // public function index(): Response // lo sustituye lo de abajo
-    public function index(EmployeeRepository $employeeRepository): Response
+    // public function index(EmployeeRepository $employeeRepository): Response
+    public function index(Request $request, EmployeeRepository $employeeRepository): Response
 
     {
         // Una acción siempre debe devolver una respesta.
@@ -62,8 +64,17 @@ class DefaultController extends AbstractController
         // Metodo 1: accediendo al rpositorio a través de AbstractController.
         // $people = $this->getDoctrine()->getRepository(Employee::class)->findAll(); // Employee::class = App\Entity\Employee
 
+        $order = [];
+
+        if($request->query->has('orderBy')) {
+            $order[$request->query->get('orderBy')] = $request->query->get('orderDir', 'ASC');
+            // $order = ['email' => 'DESC'];
+        }    
+
         // Metodo 2: creando un parámetro indicando el tipo (type hint).
-        $people = $employeeRepository->findAll(); // Employee::class = App\Entity\Employee
+        //$people = $employeeRepository->findAll(); // Employee::class = App\Entity\Employee
+
+        $people = $employeeRepository->findBy([], $order); // Employee::class = App\Entity\Employee
 
         // Se recomienda ponerlo siempre en Templates
         return $this->render('default/index.html.twig', [
@@ -145,12 +156,16 @@ class DefaultController extends AbstractController
      *      }
      * )
      */
-    public function show(int $id, EmployeeRepository $employeeRepository): Response {
-        $data = $employeeRepository->find($id);
-
+    
+    // La técinca ParamConverte inyecta directamente,
+    // un objeto del tipo indicado como parámetro
+    // intentando hacer un match del parámetro de la ruta
+    // con alguna de las propiedades del objeto requerido.
+    // https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html
+    public function show(Employee $employee): Response {
         return $this->render('default/show.html.twig', [
-            'id' => $id,
-            'person' => $data
+
+            'person' => $employee
         ]);
     }
 
