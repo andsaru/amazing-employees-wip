@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 // AbstractController es un controlador de Symfony
 // que pone a disposición nuestra multitud de características.
@@ -140,6 +141,7 @@ class DefaultController extends AbstractController
      *          "id": "\d+"
      *      }
      * )
+     * @IsGranted('ROLE_ADMIN')
      */
     // La técinca ParamConverte inyecta directamente,
     // un objeto del tipo indicado como parámetro
@@ -147,6 +149,9 @@ class DefaultController extends AbstractController
     // con alguna de las propiedades del objeto requerido.
     // https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html
     public function show(Employee $employee): Response {
+        dump($this->getUser());
+        dump($this->isGranted('ROLE_USER'));
+        // $this->denyAccessUnlessGranted('ROLE_ADMIN'); // -> Es igua a @IsGranted('ROLE_ADMIN') aplicado a la acción con comentarios.
         return $this->render('default/show.html.twig', [
             'person' => $employee
         ]);
