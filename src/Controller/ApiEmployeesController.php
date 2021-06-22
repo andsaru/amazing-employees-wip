@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
 /**
  * @Route("/api/amazing-employees", name="api_employees_")
  */
@@ -76,12 +75,10 @@ class ApiEmployeesController extends AbstractController
         SluggerInterface $slug
     ): Response {
         $data = $request->request;
-
         dump($data);
         dump($request->files);
-
         $department = $departmentRepository->find($data->get('department_id'));
-
+        
         $employee = new Employee();
         $employee->setName($data->get('name'));
         $employee->setEmail($data->get('email'));
@@ -89,17 +86,14 @@ class ApiEmployeesController extends AbstractController
         $employee->setCity($data->get('city'));
         $employee->setPhone($data->get('phone'));
         $employee->setDepartment($department);
-
-        if ($request->files->has('avatar')) {
+        if($request->files->has('avatar')) {
             $avatarFile = $request->files->get('avatar');
-
+            
             $avatarOginalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
             dump($avatarOginalFilename);
-
             $safeFilename = $slug->slug($avatarOginalFilename);
             $avatarNewFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
             dump($avatarNewFilename);
-
             try {
                 $avatarFile->move(
                     $request->server->get('DOCUMENT_ROOT') . DIRECTORY_SEPARATOR . 'employee/avatar',
@@ -108,7 +102,6 @@ class ApiEmployeesController extends AbstractController
             } catch (FileException $e) {
                 throw new \Exception($e->getMessage());
             }
-        
 
             $employee->setAvatar($avatarNewFilename);
         }
