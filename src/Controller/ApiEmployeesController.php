@@ -90,7 +90,7 @@ class ApiEmployeesController extends AbstractController
         $employee->setPhone($data->get('phone'));
         $employee->setDepartment($department);
 
-        if($request->files->has('avatar')) {
+        if ($request->files->has('avatar')) {
             $avatarFile = $request->files->get('avatar');
 
             $avatarOginalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -108,9 +108,10 @@ class ApiEmployeesController extends AbstractController
             } catch (FileException $e) {
                 throw new \Exception($e->getMessage());
             }
-        }
+        
 
-        die();
+            $employee->setAvatar($avatarNewFilename);
+        }
 
         $errors = $validator->validate($employee);
 
