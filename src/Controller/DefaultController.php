@@ -162,11 +162,9 @@ class DefaultController extends AbstractController
         // Devolver directamente un objeto RedirectResponse.
         return new RedirectResponse('/', Response::HTTP_TEMPORARY_REDIRECT);
     }
-    // EJERCICIO
-    // Crear la el recurso para obtener una representación
-    // de "UN" empleado en formato JSON.
+    
 
-        /**
+    /**
      * Normalize an employee.
      * 
      * @param Employee $employee
