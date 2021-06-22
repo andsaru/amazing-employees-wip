@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Controller;
-
 use App\Entity\Employee;
 use App\Repository\DepartmentRepository;
 use App\Repository\EmployeeRepository;
@@ -9,8 +7,10 @@ use App\Service\EmployeeNormalize;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -21,35 +21,28 @@ class ApiEmployeesController extends AbstractController
     /**
      * @Route(
      *      "",
-     *      name="cget", 
+     *      name="cget",
      *      methods={"GET"}
      * )
      */
-    public function index(Request $request, EmployeeRepository $employeeRepository, EmployeeNormalize $employeeNormalize): Response    {
+    public function index(Request $request, EmployeeRepository $employeeRepository, EmployeeNormalize $employeeNormalize): Response
+    {
         if($request->query->has('term')) {
             $result = $employeeRepository->findByTerm($request->query->get('term'));
-
             $data = [];
-
             foreach($result as $employee) {
                 $data[] = $employeeNormalize->employeeNormalize($employee);   
             }
-
+    
             return $this->json($data);
         }
-
         $result = $employeeRepository->findAll();
-
         $data = [];
-
         foreach($result as $employee) {
             $data[] = $employeeNormalize->employeeNormalize($employee);   
         }
-
         return $this->json($data);
     }
-    
-    /* Espera recibir por id cualquier número entero "/d+" */
     /**
      * @Route(
      *      "/{id}",
@@ -63,11 +56,10 @@ class ApiEmployeesController extends AbstractController
     public function show(
         Employee $employee,
         EmployeeNormalize $employeeNormalize
-    ): Response    
+    ): Response
     {
         return $this->json($employeeNormalize->employeeNormalize($employee));
     }
-
     /**
      * @Route(
      *      "",
@@ -80,14 +72,17 @@ class ApiEmployeesController extends AbstractController
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         DepartmentRepository $departmentRepository,
-        EmployeeNormalize $employeeNormalize
+        EmployeeNormalize $employeeNormalize,
+        SluggerInterface $slug
     ): Response {
         $data = $request->request;
+
+        dump($data);
+        dump($request->files);
 
         $department = $departmentRepository->find($data->get('department_id'));
 
         $employee = new Employee();
-
         $employee->setName($data->get('name'));
         $employee->setEmail($data->get('email'));
         $employee->setAge($data->get('age'));
@@ -95,20 +90,36 @@ class ApiEmployeesController extends AbstractController
         $employee->setPhone($data->get('phone'));
         $employee->setDepartment($department);
 
-        $error = $validator->validate($employee);
+        if($request->files->has('avatar')) {
+            $avatarFile = $request->files->get('avatar');
 
-        $entityManager->persist($employee);
+            $avatarOginalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
+            dump($avatarOginalFilename);
+
+            $safeFilename = $slug->slug($avatarOginalFilename);
+            $avatarNewFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
+            dump($avatarNewFilename);
+
+            try {
+                $avatarFile->move(
+                    $request->server->get('DOCUMENT_ROOT') . DIRECTORY_SEPARATOR . 'employee/avatar',
+                    $avatarNewFilename
+                );
+            } catch (FileException $e) {
+                throw new \Exception($e->getMessage());
+            }
+        }
+
+        die();
 
         $errors = $validator->validate($employee);
 
         if (count($errors) > 0) {
             $dataErrors = [];
-
             /** @var \Symfony\Component\Validator\ConstraintViolation $error */
             foreach ($errors as $error) {
                 $dataErrors[] = $error->getMessage();
             }
-
             return $this->json([
                 'status' => 'error',
                 'data' => [
@@ -117,14 +128,10 @@ class ApiEmployeesController extends AbstractController
                 ],
                 Response::HTTP_BAD_REQUEST);
         } 
-
-        // Hasta aquí $employee no tiene id.
-
+        $entityManager->persist($employee);
+        // $employee no tiene id.
         $entityManager->flush();
-
-        //dump($employee);
-
-        return  $this->json(
+        return $this->json(
             $employeeNormalize->employeeNormalize($employee),
             Response::HTTP_CREATED,
             [
@@ -137,7 +144,6 @@ class ApiEmployeesController extends AbstractController
             ]
         );
     }
-
     /**
      * @Route(
      *      "/{id}",
@@ -156,26 +162,20 @@ class ApiEmployeesController extends AbstractController
     ): Response
     {
         $employee = $employeeRepository->find($id);
-
         if(!$employee) {
             return $this->json([
-                'message' => sprintf('No he encontrado el empleado con id.: %s', $id)
+                'message' => sprintf('No he encontrado el empledo con id.: %s', $id)
             ], Response::HTTP_NOT_FOUND);
         }
         $data = $request->request;
-
         $employee->setName($data->get('name'));
         $employee->setEmail($data->get('email'));
         $employee->setAge($data->get('age'));
         $employee->setCity($data->get('city'));
         $employee->setPhone($data->get('phone'));
-
         $entityManager->flush();
-
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
-
-
     /**
      * @Route(
      *      "/{id}",
@@ -193,19 +193,15 @@ class ApiEmployeesController extends AbstractController
     ): Response
     {
         $employee = $employeeRepository->find($id);
-
         if(!$employee) {
             return $this->json([
-                'message' => sprintf('No he encontrado el empleado con id.: %s ', $id)
+                'message' => sprintf('No he encontrado el empledo con id.: %s', $id)
             ], Response::HTTP_NOT_FOUND);
         }
-
         dump($employee);
-
-        // remove() prepara el sistema pero NO ejecuta la sentencia
+        // remove() prepara el sistema pero NO ejecuta la sentencia.
         $entityManager->remove($employee);
         $entityManager->flush();
-
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }
