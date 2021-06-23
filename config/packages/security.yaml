@@ -59,5 +59,6 @@ security:
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/dashboard, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/default, roles: ROLE_USER }
         - { path: ^/api, roles: ROLE_USER }
